@@ -1,42 +1,37 @@
-
 import 'dart:io';
 
-/// Stores the valid moves.
+/// List of valid moves.
 const List<String> validMoves = ['rock', 'paper', 'scissors'];
 
-/// Gets a player's name or uses a default name if it is empty.
-String getPlayerName(String prompt, String defaultName) {
-  stdout.write(prompt);
-  String? input = stdin.readLineSync();
+/// Gets a player's name.
+String getPlayerName(String playerNumber) {
+  stdout.write('Enter Player $playerNumber name: ');
+  String name = stdin.readLineSync()?.trim() ?? '';
 
-  if (input == null || input.trim().isEmpty) {
-    print('No name entered. Using "$defaultName".');
-    return defaultName;
+  if (name.isEmpty) {
+    name = 'Player $playerNumber';
   }
 
-  return input.trim();
+  return name;
 }
 
-/// Checks whether a move is valid.
-String? validateMove(String? input) {
-  if (input == null) {
-    return null;
-  }
+/// Validates a player's move.
+String? validateMove(String move) {
+  String cleanedMove = move.trim().toLowerCase();
 
-  String move = input.trim().toLowerCase();
-
-  if (validMoves.contains(move)) {
-    return move;
+  if (validMoves.contains(cleanedMove)) {
+    return cleanedMove;
   }
 
   return null;
 }
 
-/// Keeps asking until the player enters a valid move.
+/// Gets a valid move from a player.
 String getMove(String playerName) {
   while (true) {
     stdout.write('$playerName, enter your move (rock/paper/scissors): ');
-    String? input = stdin.readLineSync();
+    String input = stdin.readLineSync() ?? '';
+
     String? move = validateMove(input);
 
     if (move != null) {
@@ -47,46 +42,51 @@ String getMove(String playerName) {
   }
 }
 
-/// Decides the round winner. Returns null for a draw.
-String? decideWinner(String playerOneMove, String playerTwoMove) {
-  if (playerOneMove == playerTwoMove) {
+/// Determines the winner of a round.
+/// Returns '1', '2', or null if the round is a draw.
+String? decideWinner(String move1, String move2) {
+  if (move1 == move2) {
     return null;
   }
 
-  switch (playerOneMove) {
+  switch (move1) {
     case 'rock':
-      if (playerTwoMove == 'scissors') {
+      if (move2 == 'scissors') {
         return '1';
+      } else {
+        return '2';
       }
-      break;
+
     case 'paper':
-      if (playerTwoMove == 'rock') {
+      if (move2 == 'rock') {
         return '1';
+      } else {
+        return '2';
       }
-      break;
+
     case 'scissors':
-      if (playerTwoMove == 'paper') {
+      if (move2 == 'paper') {
         return '1';
+      } else {
+        return '2';
       }
-      break;
   }
 
-  return '2';
+  return null;
 }
 
-/// Prints blank lines to hide Player 1's move.
+/// Hides Player 1's move before Player 2 enters a move.
 void hidePlayerOneMove() {
   for (int i = 0; i < 30; i++) {
     print('');
   }
 }
 
-/// Asks whether the players want to play again.
+/// Asks the players whether they want to play again.
 String getPlayAgain() {
   while (true) {
     stdout.write('Play again? (y/n): ');
-    String? input = stdin.readLineSync();
-    String answer = (input ?? '').trim().toLowerCase();
+    String answer = stdin.readLineSync()?.trim().toLowerCase() ?? '';
 
     if (answer == 'y' || answer == 'n') {
       return answer;
@@ -98,62 +98,55 @@ String getPlayAgain() {
 
 /// Runs the game and displays the final scores.
 void main() {
-  int playerOneScore = 0;
-  int playerTwoScore = 0;
-
   print('===== ROCK, PAPER, SCISSORS =====');
 
-  String playerOneName =
-      getPlayerName('Enter Player 1 name: ', 'Player 1');
+  String player1 = getPlayerName('1');
+  String player2 = getPlayerName('2');
 
-  String playerTwoName =
-      getPlayerName('Enter Player 2 name: ', 'Player 2');
-
+  int score1 = 0;
+  int score2 = 0;
+  int round = 1;
   String playAgain;
 
   do {
-    int roundNumber = playerOneScore + playerTwoScore + 1;
-    print('\n--- Round $roundNumber ---');
+    print('\n--- Round $round ---');
 
-    String playerOneMove = getMove(playerOneName);
+    String move1 = getMove(player1);
 
     hidePlayerOneMove();
 
-    String playerTwoMove = getMove(playerTwoName);
+    String move2 = getMove(player2);
 
-    print('$playerOneName chose $playerOneMove.');
-    print('$playerTwoName chose $playerTwoMove.');
+    print('$player1 chose $move1.');
+    print('$player2 chose $move2.');
 
-    String? winner = decideWinner(playerOneMove, playerTwoMove);
-
-    String resultMessage;
+    String? winner = decideWinner(move1, move2);
 
     if (winner == null) {
-      resultMessage = winner ?? "It's a draw!";
+      print("Result: It's a draw!");
     } else if (winner == '1') {
-      playerOneScore++;
-      resultMessage = '$playerOneName wins the round!';
+      print('Result: $player1 wins the round!');
+      score1++;
     } else {
-      playerTwoScore++;
-      resultMessage = '$playerTwoName wins the round!';
+      print('Result: $player2 wins the round!');
+      score2++;
     }
 
-    print('Result: $resultMessage');
-    print('Score -> $playerOneName: $playerOneScore | '
-        '$playerTwoName: $playerTwoScore');
+    print('Score -> $player1: $score1 | $player2: $score2');
+
+    round++;
 
     playAgain = getPlayAgain();
   } while (playAgain == 'y');
 
   print('\n===== FINAL SCORE =====');
-  print('$playerOneName: $playerOneScore | '
-      '$playerTwoName: $playerTwoScore');
+  print('$player1: $score1 | $player2: $score2');
 
-  if (playerOneScore > playerTwoScore) {
-    print('Overall winner: $playerOneName');
-  } else if (playerTwoScore > playerOneScore) {
-    print('Overall winner: $playerTwoName');
+  if (score1 > score2) {
+    print('Overall winner: $player1');
+  } else if (score2 > score1) {
+    print('Overall winner: $player2');
   } else {
-    print("Overall winner: It's a draw!");
+    print("The game ends in a draw!");
   }
 }
