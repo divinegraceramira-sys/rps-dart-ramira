@@ -12,21 +12,29 @@ This is a two-player Rock, Paper, Scissors console game written in Dart. Players
 
 ## Requirements
 
-- Dart SDK
+- Dart SDK installed
 - VS Code or Command Prompt
 
 ## How to Run
 
-1. Open a terminal in the project folder.
-2. Run this command:
+1. Open the project folder in VS Code.
+2. Open the terminal in the project folder.
+3. Run the following command:
 
-   `dart rock_paper_scissors.dart`
+   ```bash
+   dart rock_paper_scissors.dart
+   ```
+
+4. Enter the names of both players.
+5. Enter `rock`, `paper`, or `scissors` when prompted.
+6. Follow the prompts to play again or finish the game.
 
 ## Features
 
 - Two-player gameplay
 - Input validation
 - Null safety
+- Round winner and draw detection
 - Score tracking
 - Play-again option
-- Final winner announcement
+- Final score and overall winner announcement
